@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animação de Carta Aprimorada</title>
+  
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #333;
+      font-family: 'Georgia', serif;
+      overflow: hidden;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      cursor: pointer;
+      perspective: 2000px;
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    .envelope-wrapper:hover {
+        transform: scale(1.05) translateY(-10px);
+    }
+
+    .envelope {
+      position: relative;
+      width: 380px;
+      height: 250px;
+      transform-style: preserve-3d;
+    }
+
+    .envelope-back,
+    .envelope-front {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url('envelope-1.png');
+      background-size: cover;
+      border-radius: 10px;
+    }
+
+    .envelope-back {
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .envelope-front {
+      z-index: 3;
+    }
+
+    .letter-container {
+      position: absolute;
+      top: 0;
+      left: 5%;
+      width: 90%;
+      height: 250px; 
+      z-index: 2;
+      transform-style: preserve-3d;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    }
+    
+    .letter-half {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background-image: url('carta-full.png');
+      background-size: 100% 200%;
+      background-repeat: no-repeat;
+      border: 0px #EAD5AF;
+      box-sizing: border-box;
+      backface-visibility: hidden;
+    }
+
+    .letter-top {
+      top: 0;
+      background-position: top;
+      transform-origin: bottom;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .letter-bottom {
+      bottom: 0;
+      background-position: bottom;
+      transform-origin: top;
+      transform: rotateX(180deg);
+      border-radius: 0 0 10px 10px;
+      /* --- CORREÇÃO ADICIONADA --- */
+      /* Puxa a metade de baixo 1px para cima, eliminando a linha da emenda. */
+      margin-top: -1px; 
+    }
+    
+    .envelope-open-image {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url('envelope-2.png'); 
+      background-size: cover;
+      border-radius: 10px;
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 125px;
+      background-image: url('envelope-1.png');
+      background-size: 380px 250px;
+      background-position: top;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top;
+      z-index: 5;
+    }
+
+    .seal {
+      position: absolute;
+      top: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 45px;
+      height: 45px;
+      background-image: url('https://i.pinimg.com/originals/1b/c0/40/1bc04043ea735946c51323351838.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      z-index: 6;
+    }
+  </style>
+</head>
+<body>
+  <div class="envelope-wrapper" id="envelopeWrapper">
+    <div class="envelope" id="envelope">
+      <div class="envelope-back"></div>
+      
+      <div class="letter-container" id="letter">
+        <div class="letter-half letter-top"></div>
+        <div class="letter-half letter-bottom"></div>
+      </div>
+
+      <div class="envelope-front"></div>
+      <div class="envelope-open-image"></div>
+      <div class="envelope-flap"></div>
+      <div class="seal"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const envelopeWrapper = document.getElementById('envelopeWrapper');
+      const letter = document.getElementById('letter');
+      const envelope = document.getElementById('envelope');
+      const UNOPENED_LETTER_HEIGHT = letter.clientHeight;
+      const OPENED_LETTER_HEIGHT = UNOPENED_LETTER_HEIGHT * 2; 
+
+      let isOpen = false;
+      let openTimeline;
+      let closeTimeline;
+
+      const toggleHoverEffect = (enable) => {
+        envelopeWrapper.style.pointerEvents = enable ? 'auto' : 'none';
+        if (enable) {
+            envelopeWrapper.style.transform = '';
+        }
+      };
+
+      envelopeWrapper.addEventListener('click', () => {
+        if (gsap.isTweening(envelopeWrapper) || gsap.isTweening(letter) || gsap.isTweening(envelope)) return;
+
+        if (isOpen) {
+          // --- ANIMAÇÃO DE FECHAMENTO REESTRUTURADA ---
+          if (openTimeline) openTimeline.kill();
+          toggleHoverEffect(false);
+          
+          closeTimeline = gsap.timeline({ onComplete: () => toggleHoverEffect(true) });
+          closeTimeline
+            // 1. Dobra a carta e a encolhe para a escala original.
+            .to(letter, { 
+                duration: 0.8,
+                scale: 1,
+                ease: 'power3.inOut'
+            }, 0)
+            .to('.letter-bottom', { 
+                duration: 0.8,
+                rotateX: 180, 
+                ease: 'power3.inOut' 
+            }, 0)
+            .to(letter, {
+                duration: 0.8,
+                height: UNOPENED_LETTER_HEIGHT,
+                width: '90%',
+                ease: 'power3.inOut'
+            }, 0)
+            
+            // 2. Ao mesmo tempo, o envelope vem para frente para "receber" a carta.
+            .to(envelope, {
+                duration: 0.8,
+                z: 0,
+                ease: 'power3.inOut'
+            }, 0)
+
+            // 3. Após a carta encolher, ela "cai" para dentro do envelope.
+            .to(letter, {
+                duration: 0.5,
+                y: 0,
+                ease: 'power2.in'
+            }, '-=0.3') // Começa um pouco antes da animação anterior terminar.
+
+            // 4. A aba se fecha.
+            .set(letter, { zIndex: 2 })
+            .to('.envelope-flap', { duration: 0.6, rotateX: 0, ease: 'power4.inOut' })
+            .to('.envelope-open-image', { duration: 0.6, opacity: 0, ease: 'power4.inOut' }, '<')
+            .to('.seal', { duration: 0.4, opacity: 1, ease: 'power2.in' });
+
+
+          isOpen = false;
+
+        } else {
+          // --- ANIMAÇÃO DE ABRIR (PERMANECE A MESMA) ---
+          if (closeTimeline) closeTimeline.kill();
+          toggleHoverEffect(false);
+          
+          openTimeline = gsap.timeline({ onComplete: () => toggleHoverEffect(true) });
+          openTimeline
+            .to('.seal', { duration: 0.3, opacity: 0, ease: 'power2.out' })
+            .to('.envelope-flap', { duration: 1.0, rotateX: 180, ease: 'power4.inOut' }, '+=0.1')
+            .to('.envelope-open-image', { duration: 1.0, opacity: 1, ease: 'power4.inOut' }, '<')
+            .to(letter, { duration: 0.7, y: -150, rotate: '2deg', ease: 'back.out(1.2)' }, '-=0.5')
+            .to(envelope, { duration: 0.7, z: -400, ease: 'power3.inOut' }, '<')
+            .set(letter, { zIndex: 10 })
+            .to(letter, { 
+                duration: 1.2, 
+                width: '100%',
+                y: -150,           
+                scale: 1.8,          
+                rotationX: 0,
+                rotate: 0,
+                ease: 'expo.out' 
+            }, '-=0.2')
+            .to('.letter-bottom', { duration: 1, rotateX: 0, ease: 'expo.inOut' }, '<')
+            .to(letter, { duration: 1, height: OPENED_LETTER_HEIGHT, ease: 'expo.inOut' }, '<');
+
+          isOpen = true;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
