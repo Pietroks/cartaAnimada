@@ -13,113 +13,121 @@
   <style>
     /* Estilos gerais para o corpo da página */
     body {
-      margin: 0; /* Remove margens padrão */
-      background-color: #333; /* Cor de fundo escura */
-      font-family: 'Georgia', serif; /* Fonte com serifa para um visual clássico */
-      overflow: hidden; /* Esconde qualquer conteúdo que transborde a tela (impede barras de rolagem) */
-      min-height: 100vh; /* Altura mínima de 100% da altura da tela */
+      margin: 0;
+      background-color: #333;
+      font-family: 'Georgia', serif;
+      overflow: hidden;
+      min-height: 100vh;
     }
 
-    /* Contêiner principal que envolve o envelope e permite o efeito de perspectiva 3D */
+    /* Contêiner principal que envolve o envelope */
     .envelope-wrapper {
-      position: fixed; /* Posição fixa na tela, não rola com a página */
-      cursor: pointer; /* O cursor do mouse vira uma "mãozinha" */
-      perspective: 2000px; /* Define a profundidade da cena 3D, afetando a intensidade das rotações */
-      top: 50%; /* Posiciona no meio da tela verticalmente */
-      left: 50%; /* Posiciona no meio da tela horizontalmente */
-      transform: translate(-50%, -50%); /* Ajuste fino para centralizar o elemento perfeitamente */
+      position: fixed;
+      cursor: pointer;
+      perspective: 2000px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
-    /* O envelope em si, que contém todas as partes */
+    /* O envelope em si */
     .envelope {
-      position: relative; /* Necessário para que os elementos filhos com 'position: absolute' se posicionem em relação a ele */
-      width: 380px; /* Largura do envelope */
-      height: 250px; /* Altura do envelope */
-      transform-style: preserve-3d; /* Garante que os filhos mantenham suas posições 3D */
-      transform-origin: center center; /* O ponto de origem para transformações (escala, rotação) é o centro */
+      position: relative;
+      width: 380px;
+      height: 250px;
+      transform-style: preserve-3d;
+      transform-origin: center center;
     }
 
-    /* Classe base para todas as partes visuais do envelope e da carta */
+    /* Classe base para todas as partes visuais */
     .envelope-part {
-        position: absolute; /* Posição absoluta para que todas as partes se sobreponham no mesmo lugar */
+        position: absolute;
         width: 100%;
         height: 100%;
-        background-size: cover; /* A imagem de fundo cobre todo o elemento */
-        border-radius: 10px; /* Bordas levemente arredondadas */
-        will-change: transform, opacity; /* Otimização para o navegador, avisando que estas propriedades serão animadas */
+        background-size: cover;
+        border-radius: 10px;
+        will-change: transform, opacity;
     }
 
     /* --- ESTILOS DO ENVELOPE FECHADO --- */
-    
     .envelope-back {
-      background-image: url('envelope-1.png'); /* Imagem do envelope fechado */
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidade */
-      z-index: 1; /* Camada mais ao fundo */
+      background-image: url('envelope-1.png');
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      z-index: 1;
     }
 
     .envelope-front {
-      background-image: url('envelope-1.png'); /* Imagem do envelope fechado */
-      z-index: 4; /* Fica na frente da carta (que tem z-index 2) */
+      background-image: url('envelope-1.png');
+      z-index: 5; /* Fica na frente de tudo no estado fechado */
     }
 
     /* --- ESTILOS DO ENVELOPE ABERTO (começam invisíveis) --- */
     
+    /* CORREÇÃO: Fundo do envelope aberto (envelope-4.png) */
     .envelope-open-bottom {
-      background-image: url('envelope-4.png'); /* Imagem da parte de BAIXO do envelope aberto */
-      z-index: 3; /* Fica na mesma camada do fundo do envelope fechado */
-      opacity: 0; /* Começa invisível */
+      background-image: url('envelope-4.png');
+      z-index: 1; /* Camada 1: Fica atrás de tudo */
+      opacity: 0;
+    }
+
+    /* CORREÇÃO: Frente do envelope aberto (envelope-5.png) */
+    .envelope-middle {
+      background-image: url('envelope-5.png');
+      z-index: 3; /* Camada 3: Fica na frente da carta */
+      opacity: 0;
     }
     
+    /* Aba superior do envelope (envelope-3.png) */
     .envelope-open-top {
-      background-image: url('envelope-3.png'); /* Imagem da parte de CIMA do envelope aberto */
-      z-index: 1; /* Camada mais alta, para a carta sair "por baixo" dela */
-      opacity: 0; /* Começa invisível */
-      top: -95%; /* Ajuste de posição para alinhar a imagem corretamente */
+      background-image: url('envelope-3.png');
+      z-index: 1; /* Camada 6: Fica acima de tudo, é a aba que abre */
+      opacity: 0;
+      top: -95%;
+      left: -3%;
+      width: 103%;
     }
 
     /* --- ESTILOS DA CARTA --- */
 
+    /* CORREÇÃO: A carta fica entre as camadas do envelope aberto */
     .letter-container {
       position: absolute;
       top: 0;
       left: 5%;
       width: 90%;
       height: 250px;
-      z-index: 2; /* Posição intermediária: atrás do envelope-front (4) e na frente do envelope-back (1) */
+      z-index: 2; /* Camada 2: Fica entre o fundo (1) e a frente (3) */
       transform-style: preserve-3d;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+      box-shadow: 0 5px 25px rgba(0,0,0,0.0);
       will-change: transform;
-      border-radius: 10px; /* O contêiner pai tem a borda arredondada final */
-      overflow: hidden;    /* Esconde/corta os cantos pontiagudos das metades internas */
+      border-radius: 10px;
+      overflow: hidden;
     }
 
-    /* Estilo para as duas metades da carta */
+    /* Estilos das metades da carta */
     .letter-half {
       position: absolute;
       left: 0;
       width: 100%;
       height: 50%;
-      background-image: url('carta-full.png'); /* Imagem da carta inteira */
-      background-size: 100% 200%; /* A imagem é duas vezes mais alta que a metade, para caber as duas partes */
+      background-image: url('carta-full.png');
+      background-size: 100% 200%;
       background-repeat: no-repeat;
-      backface-visibility: hidden; /* O lado de trás do elemento não é visível ao ser girado */
+      backface-visibility: hidden;
     }
-
-    /* Metade de cima da carta */
     .letter-top {
       top: 0;
-      background-position: top; /* Mostra a parte de cima da imagem de fundo */
-      transform-origin: bottom; /* O ponto de dobra/rotação é a base */
-      border-radius: 10px 10px 0 0; /* Cantos arredondados apenas no topo */
+      background-position: top;
+      transform-origin: bottom;
+      border-radius: 10px 10px 0 0;
     }
-
-    /* Metade de baixo da carta */
     .letter-bottom {
       bottom: 0;
-      background-position: bottom; /* Mostra a parte de baixo da imagem de fundo */
-      transform-origin: top; /* O ponto de dobra/rotação é o topo */
-      border-radius: 0 0 10px 10px; /* Cantos arredondados apenas na base */
-      margin-top: -1px; /* Ajuste fino para evitar uma linha entre as metades */
+      background-position: bottom;
+      transform-origin: top;
+      border-radius: 0 0 10px 10px;
+      margin-top: -1px;
+      transform: rotateX(180deg);
     }
   </style>
 </head>
@@ -136,6 +144,7 @@
       </div>
 
       <div class="envelope-part envelope-front"></div>
+      <div class="envelope-part envelope-middle"></div>
       <div class="envelope-part envelope-open-top"></div>
     </div>
   </div>
@@ -143,106 +152,86 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
   <script>
-    // Espera o HTML ser totalmente carregado para executar o script
     document.addEventListener('DOMContentLoaded', () => {
-      // --- 1. SELEÇÃO DOS ELEMENTOS ---
-      // Guarda referências aos elementos principais que serão animados
+      // --- SELEÇÃO DOS ELEMENTOS ---
       const envelopeWrapper = document.getElementById('envelopeWrapper');
       const letter = document.getElementById('letter');
       const envelope = document.getElementById('envelope');
-      // Guarda as alturas da carta para a animação de abrir/fechar
       const UNOPENED_LETTER_HEIGHT = letter.clientHeight;
       const OPENED_LETTER_HEIGHT = UNOPENED_LETTER_HEIGHT * 2;
 
-      // --- 2. VARIÁVEIS DE CONTROLE DE ESTADO ---
-      let isOpen = false; // Controla se a carta está aberta ou fechada
-      let isFollowingMouse = true; // Controla se o efeito de seguir o mouse está ativo
-      let isAnimating = false; // Impede novos cliques enquanto uma animação está em andamento
+      // --- VARIÁVEIS DE CONTROLE ---
+      let isOpen = false;
+      let isFollowingMouse = true;
+      let isAnimating = false;
 
-      // --- 3. FUNÇÃO DO EFEITO DE SEGUIR O MOUSE ---
+      // --- EFEITO DE SEGUIR O MOUSE ---
       const handleMouseMove = (e) => {
-        // Se o efeito não estiver ativo (ex: durante a animação de abertura), a função para aqui
         if (!isFollowingMouse) return;
-        
-        // Pega as coordenadas X e Y do mouse
         const { clientX, clientY } = e;
-        // Pega as dimensões da janela do navegador
         const { innerWidth, innerHeight } = window;
-        
-        // Mapeia a posição do mouse para valores de movimento e rotação
         const x = gsap.utils.mapRange(0, innerWidth, -50, 50, clientX);
         const y = gsap.utils.mapRange(0, innerHeight, -30, 30, clientY);
         const rotateX = gsap.utils.mapRange(0, innerHeight, 15, -15, clientY);
         const rotateY = gsap.utils.mapRange(0, innerWidth, -15, 15, clientX);
-        
-        // Anima o contêiner do envelope para seguir o mouse suavemente
-        gsap.to(envelopeWrapper, {
-          x, y, rotateX, rotateY,
-          duration: 1.5,
-          ease: 'power2.out' // Efeito de desaceleração suave
-        });
+        gsap.to(envelopeWrapper, { x, y, rotateX, rotateY, duration: 1.5, ease: 'power2.out' });
       };
-      // Adiciona o "ouvinte" do evento de movimento do mouse
       window.addEventListener('mousemove', handleMouseMove);
 
-      // --- 4. CRIAÇÃO DAS ANIMAÇÕES (TIMELINES) ---
+      // --- CRIAÇÃO DAS ANIMAÇÕES ---
       function createTimelines() {
         // --- TIMELINE PARA ABRIR A CARTA ---
         const openTimeline = gsap.timeline({
-          paused: true, // Começa pausada, só executa quando mandarmos
-          onStart: () => { isAnimating = true; isFollowingMouse = false; }, // No início: bloqueia novos cliques e o efeito do mouse
-          onComplete: () => { isAnimating = false; isFollowingMouse = true; } // No final: libera cliques e reativa o efeito do mouse
+          paused: true,
+          onStart: () => { isAnimating = true; isFollowingMouse = false; },
+          onComplete: () => { isAnimating = false; isFollowingMouse = true; }
         });
 
         openTimeline
-          .to(envelopeWrapper, { x: 0, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power2.inOut' }) // 1. Centraliza o envelope
-          .to(['.envelope-front', '.envelope-back'], { opacity: 0, duration: 0.4, ease: 'power1.in' }, 'start') // 2. Esconde o envelope fechado
-          .to(['.envelope-open-top', '.envelope-open-bottom'], { opacity: 1, duration: 0.4, ease: 'power1.out' }, 'start') // 3. Mostra o envelope aberto (ao mesmo tempo que o passo 2)
-          .to(letter, { y: -300, duration: 1, ease: 'sine.out' }, 'start+=0.2') // 4. A carta desliza para fora, mantendo o z-index 2
-          .to(envelope, { z: -600, y: 180, scale: 1.1, duration: 1, ease: 'power2.out' }, '<') // 5. O envelope se afasta e aumenta um pouco
-          .set(letter, { zIndex: 10 }, '>-0.5') // 6. A carta já saiu, AGORA seu z-index vai para 10 (frente de tudo)
-          .to(letter, { scale: 1.8, duration: 1.2, ease: 'power2.out' }) // 7. A carta cresce na tela
-          .to('.letter-bottom', { rotateX: 0, duration: 1, ease: 'power2.inOut' }, '<') // 8. A metade de baixo da carta desdobra
-          .to(letter, { height: OPENED_LETTER_HEIGHT, duration: 1, ease: 'power2.inOut' }, '<') // 9. O contêiner da carta aumenta a altura
-          .to(letter, { boxShadow: '0 0 50px rgba(255, 255, 255, 0.3)', duration: 0.8 }, '<'); // 10. Adiciona um brilho sutil
+          .to(envelopeWrapper, { x: 0, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power2.inOut' })
+          .to(['.envelope-front', '.envelope-back'], { opacity: 0, duration: 0.4, ease: 'power1.in' }, 'start')
+          // CORREÇÃO: Adiciona a nova camada '.envelope-middle' para aparecer junto com as outras
+          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], { opacity: 1, duration: 0.4, ease: 'power1.out' }, 'start')
+          .to(letter, { y: -300, duration: 1, ease: 'sine.out' }, 'start+=0.2')
+          .to(envelope, { z: -600, y: 180, scale: 1.1, duration: 1, ease: 'power2.out' }, '<')
+          .set(letter, { zIndex: 10 }, '>-0.5') // Sobe o z-index da carta para a frente de tudo
+          .to(letter, { scale: 1.8, width: '100%', duration: 1.2, ease: 'power2.out' })
+          .to('.letter-bottom', { rotateX: 0, duration: 1, ease: 'power2.inOut' }, '<')
+          .to(letter, { height: OPENED_LETTER_HEIGHT, duration: 1, ease: 'power2.inOut' }, '<')
+          .to(letter, { boxShadow: '0 0 50px rgba(255, 255, 255, 0.3)', duration: 0.8 }, '<');
 
         // --- TIMELINE PARA FECHAR A CARTA ---
         const closeTimeline = gsap.timeline({
           paused: true,
-          onStart: () => { isAnimating = true; isFollowingMouse = false; }, // Bloqueia tudo no início
-          onComplete: () => { isAnimating = false; isFollowingMouse = true; } // Libera tudo no final
+          onStart: () => { isAnimating = true; isFollowingMouse = false; },
+          onComplete: () => { isAnimating = false; isFollowingMouse = true; }
         });
 
         closeTimeline
-          .to(letter, { scale: 1, height: UNOPENED_LETTER_HEIGHT, y: -300, duration: 1, ease: 'power2.inOut' }, 'close') // 1. Carta diminui de tamanho e altura
-          .to('.letter-bottom', { duration: 1, ease: 'power2.inOut' }, 'close') // 2. Dobra a metade de baixo
-          .to(letter, { boxShadow: '0 5px 25px rgba(0,0,0,0.3)', duration: 0.8 }, 'close') // 3. Volta a sombra normal
-          .set(letter, { zIndex: 2 }, '+=0.1') // 4. z-index volta a ser 2 para entrar "por dentro" do envelope
-          .to(letter, { y: 0, duration: 1, ease: 'sine.in' }) // 5. Carta desliza para dentro
-          .to(envelope, { z: 0, y: 0, scale: 1, duration: 1, ease: 'power2.in' }, '<') // 6. Envelope volta para a posição original
-          .to(['.envelope-open-top', '.envelope-open-bottom'], { opacity: 0, duration: 0.4, ease: 'power1.in' }, 'swapBack') // 7. Esconde o envelope aberto
-          .to(['.envelope-front', '.envelope-back'], { opacity: 1, duration: 0.4, ease: 'power1.out' }, 'swapBack'); // 8. Mostra o envelope fechado
+          .to(letter, { scale: 1, height: UNOPENED_LETTER_HEIGHT, y: -300, duration: 1, ease: 'power2.inOut' }, 'close')
+          .to('.letter-bottom', { rotateX: 180, duration: 1, ease: 'power2.inOut' }, 'close')
+          .to(letter, { boxShadow: '0 5px 25px rgba(0,0,0,0.0)', duration: 0.8 }, 'close')
+          // CORREÇÃO: Retorna o z-index da carta para 2, para que ela entre "dentro" do envelope
+          .set(letter, { zIndex: 2 }, '+=0.1')
+          .to(letter, { y: 0, width: '90%', duration: 1, ease: 'sine.in' })
+          .to(envelope, { z: 0, y: 0, scale: 1, duration: 1, ease: 'power2.in' }, '<')
+          // CORREÇÃO: Adiciona a nova camada '.envelope-middle' para desaparecer junto com as outras
+          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], { opacity: 0, duration: 0.4, ease: 'power1.in' }, 'swapBack')
+          .to(['.envelope-front', '.envelope-back'], { opacity: 1, duration: 0.4, ease: 'power1.out' }, 'swapBack');
         
-        // Retorna as duas timelines criadas
         return { openTimeline, closeTimeline };
       }
 
-      // --- 5. EXECUÇÃO E CONTROLE DO CLIQUE ---
-      // Chama a função para criar e guardar as timelines nas variáveis
+      // --- EXECUÇÃO E CONTROLE DO CLIQUE ---
       const { openTimeline, closeTimeline } = createTimelines();
 
-      // Adiciona o "ouvinte" do evento de clique no envelope
       envelopeWrapper.addEventListener('click', () => {
-        // Se uma animação já estiver acontecendo, não faz nada
         if (isAnimating) return;
-        
-        // Verifica se a carta está aberta para decidir qual animação executar
         if (isOpen) {
-          closeTimeline.restart(); // Se estiver aberta, executa a animação de fechar
+          closeTimeline.restart();
         } else {
-          openTimeline.restart(); // Se estiver fechada, executa a animação de abrir
+          openTimeline.restart();
         }
-        // Inverte o estado da carta (se estava aberta, agora está fechada, e vice-versa)
         isOpen = !isOpen;
       });
     });
