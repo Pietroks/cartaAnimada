@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carta Animada</title>
+  <link rel="preload" href="envelope-1.webp" as="image">
+  <link rel="preload" href="envelope-3.webp" as="image">
+  <link rel="preload" href="envelope-4.webp" as="image">
+  <link rel="preload" href="envelope-5.webp" as="image">
+  <link rel="preload" href="carta-pt1.webp" as="image">
+  <link rel="preload" href="carta-pt2.webp" as="image">
+  <link rel="preload" href="carta-pt3.webp" as="image">
   <style>
     body {
       margin: 0;
@@ -151,7 +158,7 @@
         <div class="letter-part letter-bottom"></div>
       </div>
 
-      <div class="cardNivel1" id="cardNivel1"></div>
+      <div class="cardNivel1" id="cardNivel1" loading="lazy"></div>
 
       <div class="envelope-part envelope-front"></div>
       <div class="envelope-part envelope-middle"></div>
