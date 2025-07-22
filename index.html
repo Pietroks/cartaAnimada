@@ -4,23 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carta Animada</title>
-  <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
-  <link rel="shortcut icon" href="/favicon/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
-  <link rel="manifest" href="/favicon/site.webmanifest" />
-
   <style>
-    /* Estilos gerais para o corpo da página */
     body {
       margin: 0;
-      background-color: #333;
+      background: radial-gradient(circle at center, #2c2c2c, #111);
       font-family: 'Georgia', serif;
       overflow: hidden;
       min-height: 100vh;
     }
 
-    /* Contêiner principal que envolve o envelope */
     .envelope-wrapper {
       position: fixed;
       cursor: pointer;
@@ -28,120 +20,138 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      transition: filter 0.4s ease;
     }
 
-    /* O envelope em si */
+    .envelope-wrapper:hover {
+      filter: brightness(1.05) saturate(1.1);
+    }
+
     .envelope {
       position: relative;
       width: 380px;
       height: 250px;
-      transform-style: preserve-3d;
-      transform-origin: center center;
+      transform-style: flat;
+      transition: box-shadow 0.4s ease;
     }
 
-    /* Classe base para todas as partes visuais */
     .envelope-part {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        border-radius: 10px;
-        will-change: transform, opacity;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+      will-change: transform, opacity;
+      transition: opacity 0.4s ease;
     }
 
-    /* --- ESTILOS DO ENVELOPE FECHADO --- */
     .envelope-back {
       background-image: url('envelope-1.png');
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
       z-index: 1;
     }
 
     .envelope-front {
       background-image: url('envelope-1.png');
-      z-index: 5; /* Fica na frente de tudo no estado fechado */
+      z-index: 5;
     }
 
-    /* --- ESTILOS DO ENVELOPE ABERTO (começam invisíveis) --- */
-    
-    /* CORREÇÃO: Fundo do envelope aberto (envelope-4.png) */
     .envelope-open-bottom {
       background-image: url('envelope-4.png');
-      z-index: 1; /* Camada 1: Fica atrás de tudo */
+      z-index: 2;
       opacity: 0;
     }
 
-    /* CORREÇÃO: Frente do envelope aberto (envelope-5.png) */
     .envelope-middle {
       background-image: url('envelope-5.png');
-      z-index: 3; /* Camada 3: Fica na frente da carta */
+      z-index: 3;
       opacity: 0;
     }
-    
-    /* Aba superior do envelope (envelope-3.png) */
+
     .envelope-open-top {
       background-image: url('envelope-3.png');
-      z-index: 1; /* Camada 6: Fica acima de tudo, é a aba que abre */
+      z-index: 1;
       opacity: 0;
       top: -95%;
-      left: -3%;
-      width: 103%;
+      left: 0%;
+      width: 100%;
     }
 
-    /* --- ESTILOS DA CARTA --- */
-
-    /* CORREÇÃO: A carta fica entre as camadas do envelope aberto */
     .letter-container {
       position: absolute;
       top: 0;
       left: 5%;
       width: 90%;
       height: 250px;
-      z-index: 2; /* Camada 2: Fica entre o fundo (1) e a frente (3) */
+      z-index: 2;
       transform-style: preserve-3d;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.0);
-      will-change: transform;
-      border-radius: 10px;
-      overflow: hidden;
+      border-radius: 12px;
+      overflow: visible;
     }
 
-    /* Estilos das metades da carta */
-    .letter-half {
+    .letter-part {
       position: absolute;
       left: 0;
       width: 100%;
-      height: 50%;
-      background-image: url('carta-full.png');
-      background-size: 100% 200%;
+      height: 33.333%;
+      background-size: cover;
       background-repeat: no-repeat;
+      background-position: center;
       backface-visibility: hidden;
     }
+
     .letter-top {
       top: 0;
-      background-position: top;
+      background-image: url('carta-pt1.png');
       transform-origin: bottom;
-      border-radius: 10px 10px 0 0;
+      transform: rotateX(-180deg);
+      border-radius: 12px 12px 0 0;
     }
+
+    .letter-middle {
+      top: 33.333%;
+      background-image: url('carta-pt2.png');
+    }
+
     .letter-bottom {
       bottom: 0;
-      background-position: bottom;
+      height: 33.333%;
+      background-image: url('carta-pt3.png');
       transform-origin: top;
-      border-radius: 0 0 10px 10px;
-      margin-top: -1px;
       transform: rotateX(180deg);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .cardNivel1 {
+      position: absolute;
+      top: 350px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: auto;
+      background-image: url('./card-nivel1.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0;
+      transform-origin: center;
+      z-index: 11;
     }
   </style>
 </head>
 <body>
   <div class="envelope-wrapper" id="envelopeWrapper">
     <div class="envelope" id="envelope">
-      
       <div class="envelope-part envelope-back"></div>
       <div class="envelope-part envelope-open-bottom"></div>
-      
+
       <div class="letter-container" id="letter">
-        <div class="letter-half letter-top"></div>
-        <div class="letter-half letter-bottom"></div>
+        <div class="letter-part letter-top"></div>
+        <div class="letter-part letter-middle"></div>
+        <div class="letter-part letter-bottom"></div>
       </div>
+
+      <div class="cardNivel1" id="cardNivel1"></div>
 
       <div class="envelope-part envelope-front"></div>
       <div class="envelope-part envelope-middle"></div>
@@ -150,22 +160,17 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // --- SELEÇÃO DOS ELEMENTOS ---
       const envelopeWrapper = document.getElementById('envelopeWrapper');
       const letter = document.getElementById('letter');
       const envelope = document.getElementById('envelope');
-      const UNOPENED_LETTER_HEIGHT = letter.clientHeight;
-      const OPENED_LETTER_HEIGHT = UNOPENED_LETTER_HEIGHT * 2;
+      const cardNivel1 = document.getElementById('cardNivel1');
 
-      // --- VARIÁVEIS DE CONTROLE ---
       let isOpen = false;
       let isFollowingMouse = true;
       let isAnimating = false;
 
-      // --- EFEITO DE SEGUIR O MOUSE ---
       const handleMouseMove = (e) => {
         if (!isFollowingMouse) return;
         const { clientX, clientY } = e;
@@ -178,9 +183,7 @@
       };
       window.addEventListener('mousemove', handleMouseMove);
 
-      // --- CRIAÇÃO DAS ANIMAÇÕES ---
       function createTimelines() {
-        // --- TIMELINE PARA ABRIR A CARTA ---
         const openTimeline = gsap.timeline({
           paused: true,
           onStart: () => { isAnimating = true; isFollowingMouse = false; },
@@ -188,19 +191,59 @@
         });
 
         openTimeline
-          .to(envelopeWrapper, { x: 0, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: 'power2.inOut' })
-          .to(['.envelope-front', '.envelope-back'], { opacity: 0, duration: 0.4, ease: 'power1.in' }, 'start')
-          // CORREÇÃO: Adiciona a nova camada '.envelope-middle' para aparecer junto com as outras
-          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], { opacity: 1, duration: 0.4, ease: 'power1.out' }, 'start')
-          .to(letter, { y: -300, duration: 1, ease: 'sine.out' }, 'start+=0.2')
-          .to(envelope, { z: -600, y: 180, scale: 1.1, duration: 1, ease: 'power2.out' }, '<')
-          .set(letter, { zIndex: 10 }, '>-0.5') // Sobe o z-index da carta para a frente de tudo
-          .to(letter, { scale: 1.8, width: '100%', duration: 1.2, ease: 'power2.out' })
-          .to('.letter-bottom', { rotateX: 0, duration: 1, ease: 'power2.inOut' }, '<')
-          .to(letter, { height: OPENED_LETTER_HEIGHT, duration: 1, ease: 'power2.inOut' }, '<')
-          .to(letter, { boxShadow: '0 0 50px rgba(255, 255, 255, 0.3)', duration: 0.8 }, '<');
+          .to(envelopeWrapper, {
+            x: 0, y: 0, rotateX: 0, rotateY: 0,
+            duration: 1, ease: 'power2.inOut'
+          })
+          .to(['.envelope-front', '.envelope-back'], {
+            opacity: 0, duration: 0.5, ease: 'power1.in'
+          }, 'start')
+          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], {
+            opacity: 1, duration: 0.5, ease: 'power1.out'
+          }, 'start')
+          .to(letter, {
+            y: -280,
+            z: 280,
+            opacity: 1,
+            duration: 1.5,
+            ease: 'expo.out'
+          }, 'start+=0.3')
+          .to(envelope, {
+            z: -600, y: 180, scale: 1,
+            duration: 1.5,
+            ease: 'expo.out'
+          }, '<')
+          .set(letter, { zIndex: 10 }, '>-0.4')
+          .to('.letter-top', { rotateX: 0, duration: 0.8, ease: 'power2.inOut' }, '<')
+          .to('.letter-bottom', { rotateX: 0, duration: 0.8, ease: 'power2.inOut' }, '<+=0.2')
+          .to(letter, {
+            scale: window.innerWidth < 768 ? 1.5 : 2,
+            y: -window.innerHeight * 0.15,
+            transformOrigin: 'center 90%',
+            width: '100%',
+            height: '200%',
+            duration: 1.2,
+            ease: 'power2.out'
+          }, '<+=0.2')
+          .to(letter, {
+            boxShadow: '0 0 50px rgba(255, 255, 255, 0.3)',
+            duration: 1
+          }, '<')
+          .fromTo(cardNivel1, {
+            opacity: 0,
+            y: 40,
+            scale: 0.9
+          }, {
+            opacity: 1,
+            y: 0,
+            width: '100%',
+            height: '100%',
+            top: '110%',
+            scale: 1,
+            duration: 1,
+            ease: 'power2.out'
+          }, '<+=0.3');
 
-        // --- TIMELINE PARA FECHAR A CARTA ---
         const closeTimeline = gsap.timeline({
           paused: true,
           onStart: () => { isAnimating = true; isFollowingMouse = false; },
@@ -208,21 +251,57 @@
         });
 
         closeTimeline
-          .to(letter, { scale: 1, height: UNOPENED_LETTER_HEIGHT, y: -300, duration: 1, ease: 'power2.inOut' }, 'close')
-          .to('.letter-bottom', { rotateX: 180, duration: 1, ease: 'power2.inOut' }, 'close')
-          .to(letter, { boxShadow: '0 5px 25px rgba(0,0,0,0.0)', duration: 0.8 }, 'close')
-          // CORREÇÃO: Retorna o z-index da carta para 2, para que ela entre "dentro" do envelope
-          .set(letter, { zIndex: 2 }, '+=0.1')
-          .to(letter, { y: 0, width: '90%', duration: 1, ease: 'sine.in' })
-          .to(envelope, { z: 0, y: 0, scale: 1, duration: 1, ease: 'power2.in' }, '<')
-          // CORREÇÃO: Adiciona a nova camada '.envelope-middle' para desaparecer junto com as outras
-          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], { opacity: 0, duration: 0.4, ease: 'power1.in' }, 'swapBack')
-          .to(['.envelope-front', '.envelope-back'], { opacity: 1, duration: 0.4, ease: 'power1.out' }, 'swapBack');
-        
+          .to(cardNivel1, {
+            opacity: 0,
+            y: 40,
+            scale: 0.9,
+            duration: 0.5,
+            ease: 'power1.inOut'
+          }, 'fold')
+          .to(letter, {
+            boxShadow: '0 0 0 rgba(0,0,0,0)',
+            duration: 0.5
+          }, 'fold')
+          .to(letter, {
+            scale: 1,
+            width: '90%',
+            height: '250px',
+            y: -300,
+            duration: 1,
+            ease: 'power2.inOut'
+          }, 'fold+=0.1')
+          .to('.letter-top', {
+            rotateX: -180,
+            duration: 0.6,
+            ease: 'power2.inOut'
+          }, 'fold+=0.4')
+          .to('.letter-bottom', {
+            rotateX: 180,
+            duration: 0.6,
+            ease: 'power2.inOut'
+          }, 'fold+=0.6')
+          .to(letter, {
+            y: 0,
+            duration: 1,
+            ease: 'power2.inOut'
+          }, 'fold+=1.1')
+          .set(letter, { zIndex: 3 }, 'fold+=1.0')
+          .to(envelope, {
+            z: 0, y: 0, scale: 1,
+            transformOrigin: 'center center',
+            duration: 1,
+            ease: 'power2.in'
+          }, '<')
+          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], {
+            opacity: 0, duration: 0.4, ease: 'power1.in'
+          }, 'swapBack')
+          .to(['.envelope-front', '.envelope-back'], {
+            opacity: 1, duration: 0.4, ease: 'power1.out'
+          }, 'swapBack');
+
         return { openTimeline, closeTimeline };
       }
 
-      // --- EXECUÇÃO E CONTROLE DO CLIQUE ---
       const { openTimeline, closeTimeline } = createTimelines();
 
       envelopeWrapper.addEventListener('click', () => {
