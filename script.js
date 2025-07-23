@@ -308,6 +308,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   envelopeWrapper.addEventListener("click", () => {
     if (isAnimating || body.classList.contains("light-off")) return;
+
+    if (event.target.classList.contains("envelope-open-top") && !isOpen) {
+      return;
+    }
+
     if (isOpen) {
       closeTimeline.restart();
     } else {
@@ -315,4 +320,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     isOpen = !isOpen;
   });
+});
+
+document.addEventListener("click", function (e) {
+  const sparkle = document.createElement("div");
+  sparkle.className = "magic-click";
+  sparkle.style.left = e.pageX - 20 + "px";
+  sparkle.style.top = e.pageY - 20 + "px";
+  document.body.appendChild(sparkle);
+
+  setTimeout(() => sparkle.remove(), 1200);
 });

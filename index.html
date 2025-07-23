@@ -13,6 +13,10 @@
     <link rel="preload" href="carta-pt3.webp" as="image" />
     <link rel="preload" href="card-nivel1.webp" as="image" />
     <style>
+      * {
+        cursor: url("./img/wand_cursor_cartoon_96.png") 5 5, default;
+      }
+
       body {
         margin: 0;
         background: radial-gradient(
@@ -24,7 +28,6 @@
         overflow: hidden;
         min-height: 100vh;
         transition: all 0.5s ease-in-out;
-        cursor: url("./img/varinha-magica.webp") 10 30, auto;
       }
 
       body.light-off {
@@ -34,6 +37,12 @@
       body.light-off .envelope-wrapper {
         filter: brightness(0.1);
         cursor: default;
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
       }
 
       .envelope-wrapper {
@@ -162,9 +171,57 @@
         cursor: pointer;
         transition: transform 0.4s ease, box-shadow 0.4s ease;
       }
+
+      .magic-click {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(66, 200, 255, 0.8),
+          rgba(20, 100, 255, 0.4),
+          transparent
+        );
+        pointer-events: none;
+        animation: sparkle 1.2s ease-out forwards;
+        filter: blur(1px);
+        z-index: 9999;
+        box-shadow: 0 0 8px rgba(100, 200, 255, 0.6);
+      }
+
+      .magic-click::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.8),
+          0 0 12px rgba(173, 216, 255, 0.6), 0 0 20px rgba(173, 216, 255, 0.4);
+      }
+
+      @keyframes sparkle {
+        0% {
+          transform: scale(0.8);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(2.5);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
+    <canvas id="starCanvas"></canvas>
     <div class="envelope-wrapper" id="envelopeWrapper">
       <div class="envelope" id="envelope">
         <div class="envelope-part envelope-back"></div>
@@ -186,5 +243,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="/script.js"></script>
+    <script src="/script-mouse-shit.js"></script>
   </body>
 </html>
