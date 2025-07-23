@@ -1,326 +1,190 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carta Animada</title>
-  <link rel="preload" href="envelope-1.webp" as="image">
-  <link rel="preload" href="envelope-3.webp" as="image">
-  <link rel="preload" href="envelope-4.webp" as="image">
-  <link rel="preload" href="envelope-5.webp" as="image">
-  <link rel="preload" href="carta-pt1.webp" as="image">
-  <link rel="preload" href="carta-pt2.webp" as="image">
-  <link rel="preload" href="carta-pt3.webp" as="image">
-  <style>
-    body {
-      margin: 0;
-      background: radial-gradient(circle at center, #2c2c2c, #111);
-      font-family: 'Georgia', serif;
-      overflow: hidden;
-      min-height: 100vh;
-    }
-
-    .envelope-wrapper {
-      position: fixed;
-      cursor: pointer;
-      perspective: 2000px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transition: filter 0.4s ease;
-    }
-
-    .envelope-wrapper:hover {
-      filter: brightness(1.05) saturate(1.1);
-    }
-
-    .envelope {
-      position: relative;
-      width: 380px;
-      height: 250px;
-      transform-style: flat;
-      transition: box-shadow 0.4s ease;
-    }
-
-    .envelope-part {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      border-radius: 12px;
-      will-change: transform, opacity;
-      transition: opacity 0.4s ease;
-    }
-
-    .envelope-back {
-      background-image: url('envelope-1.webp');
-      z-index: 1;
-    }
-
-    .envelope-front {
-      background-image: url('envelope-1.webp');
-      z-index: 5;
-    }
-
-    .envelope-open-bottom {
-      background-image: url('envelope-4.webp');
-      z-index: 2;
-      opacity: 0;
-    }
-
-    .envelope-middle {
-      background-image: url('envelope-5.webp');
-      z-index: 3;
-      opacity: 0;
-    }
-
-    .envelope-open-top {
-      background-image: url('envelope-3.webp');
-      z-index: 1;
-      opacity: 0;
-      top: -95%;
-      left: 0%;
-      width: 100%;
-    }
-
-    .letter-container {
-      position: absolute;
-      top: 0;
-      left: 5%;
-      width: 90%;
-      height: 250px;
-      z-index: 2;
-      transform-style: preserve-3d;
-      border-radius: 12px;
-      overflow: visible;
-    }
-
-    .letter-part {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      height: 33.333%;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      backface-visibility: hidden;
-    }
-
-    .letter-top {
-      top: 0;
-      background-image: url('carta-pt1.webp');
-      transform-origin: bottom;
-      transform: rotateX(-180deg);
-      border-radius: 12px 12px 0 0;
-    }
-
-    .letter-middle {
-      top: 33.333%;
-      background-image: url('carta-pt2.webp');
-    }
-
-    .letter-bottom {
-      bottom: 0;
-      height: 33.333%;
-      background-image: url('carta-pt3.webp');
-      transform-origin: top;
-      transform: rotateX(180deg);
-      border-radius: 0 0 12px 12px;
-    }
-
-    .cardNivel1 {
-      position: absolute;
-      top: 350px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60%;
-      height: auto;
-      background-image: url('./card-nivel1.webp');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      opacity: 0;
-      transform-origin: center;
-      z-index: 11;
-    }
-  </style>
-</head>
-<body>
-  <div class="envelope-wrapper" id="envelopeWrapper">
-    <div class="envelope" id="envelope">
-      <div class="envelope-part envelope-back"></div>
-      <div class="envelope-part envelope-open-bottom"></div>
-
-      <div class="letter-container" id="letter">
-        <div class="letter-part letter-top"></div>
-        <div class="letter-part letter-middle"></div>
-        <div class="letter-part letter-bottom"></div>
-      </div>
-
-      <div class="cardNivel1" id="cardNivel1" loading="lazy"></div>
-
-      <div class="envelope-part envelope-front"></div>
-      <div class="envelope-part envelope-middle"></div>
-      <div class="envelope-part envelope-open-top"></div>
-    </div>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const envelopeWrapper = document.getElementById('envelopeWrapper');
-      const letter = document.getElementById('letter');
-      const envelope = document.getElementById('envelope');
-      const cardNivel1 = document.getElementById('cardNivel1');
-
-      let isOpen = false;
-      let isFollowingMouse = true;
-      let isAnimating = false;
-
-      const handleMouseMove = (e) => {
-        if (!isFollowingMouse) return;
-        const { clientX, clientY } = e;
-        const { innerWidth, innerHeight } = window;
-        const x = gsap.utils.mapRange(0, innerWidth, -50, 50, clientX);
-        const y = gsap.utils.mapRange(0, innerHeight, -30, 30, clientY);
-        const rotateX = gsap.utils.mapRange(0, innerHeight, 15, -15, clientY);
-        const rotateY = gsap.utils.mapRange(0, innerWidth, -15, 15, clientX);
-        gsap.to(envelopeWrapper, { x, y, rotateX, rotateY, duration: 1.5, ease: 'power2.out' });
-      };
-      window.addEventListener('mousemove', handleMouseMove);
-
-      function createTimelines() {
-        const openTimeline = gsap.timeline({
-          paused: true,
-          onStart: () => { isAnimating = true; isFollowingMouse = false; },
-          onComplete: () => { isAnimating = false; isFollowingMouse = true; }
-        });
-
-        openTimeline
-          .to(envelopeWrapper, {
-            x: 0, y: 0, rotateX: 0, rotateY: 0,
-            duration: 1, ease: 'power2.inOut'
-          })
-          .to(['.envelope-front', '.envelope-back'], {
-            opacity: 0, duration: 0.5, ease: 'power1.in'
-          }, 'start')
-          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], {
-            opacity: 1, duration: 0.5, ease: 'power1.out'
-          }, 'start')
-          .to(letter, {
-            y: -280,
-            z: 280,
-            opacity: 1,
-            duration: 1.5,
-            ease: 'expo.out'
-          }, 'start+=0.3')
-          .to(envelope, {
-            z: -600, y: 180, scale: 1,
-            duration: 1.5,
-            ease: 'expo.out'
-          }, '<')
-          .set(letter, { zIndex: 10 }, '>-0.4')
-          .to('.letter-top', { rotateX: 0, duration: 0.8, ease: 'power2.inOut' }, '<')
-          .to('.letter-bottom', { rotateX: 0, duration: 0.8, ease: 'power2.inOut' }, '<+=0.2')
-          .to(letter, {
-            scale: window.innerWidth < 768 ? 1.5 : 2,
-            y: -window.innerHeight * 0.15,
-            transformOrigin: 'center 90%',
-            width: '100%',
-            height: '200%',
-            duration: 1.2,
-            ease: 'power2.out'
-          }, '<+=0.2')
-          .to(letter, {
-            boxShadow: '0 0 50px rgba(255, 255, 255, 0.3)',
-            duration: 1
-          }, '<')
-          .fromTo(cardNivel1, {
-            opacity: 0,
-            y: 40,
-            scale: 0.9
-          }, {
-            opacity: 1,
-            y: 0,
-            width: '100%',
-            height: '100%',
-            top: '110%',
-            scale: 1,
-            duration: 1,
-            ease: 'power2.out'
-          }, '<+=0.3');
-
-        const closeTimeline = gsap.timeline({
-          paused: true,
-          onStart: () => { isAnimating = true; isFollowingMouse = false; },
-          onComplete: () => { isAnimating = false; isFollowingMouse = true; }
-        });
-
-        closeTimeline
-          .to(cardNivel1, {
-            opacity: 0,
-            y: 40,
-            scale: 0.9,
-            duration: 0.5,
-            ease: 'power1.inOut'
-          }, 'fold')
-          .to(letter, {
-            boxShadow: '0 0 0 rgba(0,0,0,0)',
-            duration: 0.5
-          }, 'fold')
-          .to(letter, {
-            scale: 1,
-            width: '90%',
-            height: '250px',
-            y: -300,
-            duration: 1,
-            ease: 'power2.inOut'
-          }, 'fold+=0.1')
-          .to('.letter-top', {
-            rotateX: -180,
-            duration: 0.6,
-            ease: 'power2.inOut'
-          }, 'fold+=0.4')
-          .to('.letter-bottom', {
-            rotateX: 180,
-            duration: 0.6,
-            ease: 'power2.inOut'
-          }, 'fold+=0.6')
-          .to(letter, {
-            y: 0,
-            duration: 1,
-            ease: 'power2.inOut'
-          }, 'fold+=1.1')
-          .set(letter, { zIndex: 3 }, 'fold+=1.0')
-          .to(envelope, {
-            z: 0, y: 0, scale: 1,
-            transformOrigin: 'center center',
-            duration: 1,
-            ease: 'power2.in'
-          }, '<')
-          .to(['.envelope-open-top', '.envelope-open-bottom', '.envelope-middle'], {
-            opacity: 0, duration: 0.4, ease: 'power1.in'
-          }, 'swapBack')
-          .to(['.envelope-front', '.envelope-back'], {
-            opacity: 1, duration: 0.4, ease: 'power1.out'
-          }, 'swapBack');
-
-        return { openTimeline, closeTimeline };
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carta Animada</title>
+    <link rel="preload" href="envelope-1.webp" as="image" />
+    <link rel="preload" href="envelope-3.webp" as="image" />
+    <link rel="preload" href="envelope-4.webp" as="image" />
+    <link rel="preload" href="envelope-5.webp" as="image" />
+    <link rel="preload" href="carta-pt1.webp" as="image" />
+    <link rel="preload" href="carta-pt2.webp" as="image" />
+    <link rel="preload" href="carta-pt3.webp" as="image" />
+    <link rel="preload" href="card-nivel1.webp" as="image" />
+    <style>
+      body {
+        margin: 0;
+        background: radial-gradient(
+          circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+          #4a4a4a,
+          #111 40%
+        );
+        font-family: "Georgia", serif;
+        overflow: hidden;
+        min-height: 100vh;
+        transition: all 0.5s ease-in-out;
+        cursor: url("./img/varinha-magica.webp") 10 30, auto;
       }
 
-      const { openTimeline, closeTimeline } = createTimelines();
+      body.light-off {
+        background: #000;
+      }
 
-      envelopeWrapper.addEventListener('click', () => {
-        if (isAnimating) return;
-        if (isOpen) {
-          closeTimeline.restart();
-        } else {
-          openTimeline.restart();
-        }
-        isOpen = !isOpen;
-      });
-    });
-  </script>
-</body>
+      body.light-off .envelope-wrapper {
+        filter: brightness(0.1);
+        cursor: default;
+      }
+
+      .envelope-wrapper {
+        position: fixed;
+        cursor: pointer;
+        perspective: 2000px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: filter 0.4s ease;
+      }
+
+      .envelope-wrapper:hover {
+        filter: brightness(1.05) saturate(1.1);
+      }
+
+      .envelope {
+        position: relative;
+        width: 380px;
+        height: 250px;
+        transform-style: flat;
+        transition: box-shadow 0.4s ease;
+      }
+
+      .envelope-part {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        border-radius: 12px;
+        will-change: transform, opacity;
+        transition: opacity 0.4s ease;
+      }
+
+      .envelope-back {
+        background-image: url("envelope-1.webp");
+        z-index: 1;
+      }
+
+      .envelope-front {
+        background-image: url("envelope-1.webp");
+        z-index: 5;
+      }
+
+      .envelope-open-bottom {
+        background-image: url("envelope-4.webp");
+        z-index: 2;
+        opacity: 0;
+      }
+
+      .envelope-middle {
+        background-image: url("envelope-5.webp");
+        z-index: 3;
+        opacity: 0;
+      }
+
+      .envelope-open-top {
+        background-image: url("envelope-3.webp");
+        z-index: 1;
+        opacity: 0;
+        top: -95%;
+        left: 0%;
+        width: 100%;
+      }
+
+      .letter-container {
+        position: absolute;
+        top: 0;
+        left: 5%;
+        width: 90%;
+        height: 250px;
+        z-index: 2;
+        transform-style: preserve-3d;
+        border-radius: 12px;
+        overflow: visible;
+      }
+
+      .letter-part {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 33.333%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        backface-visibility: hidden;
+      }
+
+      .letter-top {
+        top: 0;
+        background-image: url("carta-pt1.webp");
+        transform-origin: bottom;
+        transform: rotateX(-180deg);
+        border-radius: 12px 12px 0 0;
+      }
+
+      .letter-middle {
+        top: 33.333%;
+        background-image: url("carta-pt2.webp");
+      }
+
+      .letter-bottom {
+        bottom: 0;
+        height: 33.333%;
+        background-image: url("carta-pt3.webp");
+        transform-origin: top;
+        transform: rotateX(180deg);
+        border-radius: 0 0 12px 12px;
+      }
+
+      .cardNivel1 {
+        position: absolute;
+        top: 350px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: auto;
+        background-image: url("./card-nivel1.webp");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0;
+        transform-origin: center;
+        z-index: 11;
+        cursor: pointer;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope" id="envelope">
+        <div class="envelope-part envelope-back"></div>
+        <div class="envelope-part envelope-open-bottom"></div>
+
+        <div class="letter-container" id="letter">
+          <div class="letter-part letter-top"></div>
+          <div class="letter-part letter-middle"></div>
+          <div class="letter-part letter-bottom"></div>
+        </div>
+
+        <div class="cardNivel1" id="cardNivel1" loading="lazy"></div>
+
+        <div class="envelope-part envelope-front"></div>
+        <div class="envelope-part envelope-middle"></div>
+        <div class="envelope-part envelope-open-top"></div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="/script.js"></script>
+  </body>
 </html>
