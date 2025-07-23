@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const envelope = document.getElementById("envelope");
   const cardNivel1 = document.getElementById("cardNivel1");
   const body = document.body;
+  const envelopeOpenSound = document.getElementById("envelopeOpenSound");
+  const envelopeCloseSound = document.getElementById("envelopeCloseSound");
 
   let isOpen = false;
   let isFollowingMouse = true;
@@ -82,6 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
       onStart: () => {
         isAnimating = true;
         isFollowingMouse = false;
+        envelopeOpenSound.currentTime = 0;
+        envelopeOpenSound.play();
       },
       onComplete: () => {
         isAnimating = false;
@@ -203,6 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
         cardNivel1.removeEventListener("click", handleCardClick);
         cardNivel1.removeEventListener("mouseenter", handleCardHover);
         cardNivel1.removeEventListener("mouseleave", handleCardHoverOut);
+        envelopeCloseSound.currentTime = 0;
+        envelopeCloseSound.play();
       },
       onComplete: () => {
         isAnimating = false;
@@ -330,4 +336,11 @@ document.addEventListener("click", function (e) {
   document.body.appendChild(sparkle);
 
   setTimeout(() => sparkle.remove(), 1200);
+});
+
+const wandSound = document.getElementById("wandSound");
+
+document.addEventListener("click", () => {
+  wandSound.currentTime = 0; // Reinicia o áudio se estiver tocando
+  wandSound.play();
 });

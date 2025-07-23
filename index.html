@@ -79,29 +79,29 @@
       }
 
       .envelope-back {
-        background-image: url("envelope-1.webp");
+        background-image: url("img/envelope-1.webp");
         z-index: 1;
       }
 
       .envelope-front {
-        background-image: url("envelope-1.webp");
+        background-image: url("img/envelope-1.webp");
         z-index: 5;
       }
 
       .envelope-open-bottom {
-        background-image: url("envelope-4.webp");
+        background-image: url("img/envelope-4.webp");
         z-index: 2;
         opacity: 0;
       }
 
       .envelope-middle {
-        background-image: url("envelope-5.webp");
+        background-image: url("img/envelope-5.webp");
         z-index: 3;
         opacity: 0;
       }
 
       .envelope-open-top {
-        background-image: url("envelope-3.webp");
+        background-image: url("img/envelope-3.webp");
         z-index: 1;
         opacity: 0;
         top: -95%;
@@ -134,7 +134,7 @@
 
       .letter-top {
         top: 0;
-        background-image: url("carta-pt1.webp");
+        background-image: url("img/carta-pt1.webp");
         transform-origin: bottom;
         transform: rotateX(-180deg);
         border-radius: 12px 12px 0 0;
@@ -142,13 +142,13 @@
 
       .letter-middle {
         top: 33.333%;
-        background-image: url("carta-pt2.webp");
+        background-image: url("img/carta-pt2.webp");
       }
 
       .letter-bottom {
         bottom: 0;
         height: 33.333%;
-        background-image: url("carta-pt3.webp");
+        background-image: url("img/carta-pt3.webp");
         transform-origin: top;
         transform: rotateX(180deg);
         border-radius: 0 0 12px 12px;
@@ -161,7 +161,7 @@
         transform: translateX(-50%);
         width: 60%;
         height: auto;
-        background-image: url("./card-nivel1.webp");
+        background-image: url("img/card-nivel1.webp");
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
@@ -221,6 +221,21 @@
     </style>
   </head>
   <body>
+    <audio
+      id="wandSound"
+      src="./audio/surprise-sound-effect-99300.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="envelopeOpenSound"
+      src="/audio/harp-piano-dreamy-flashback-jam-fx-1-00-07.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="envelopeCloseSound"
+      src="/audio/heavy-thunder-sound-effect-no-copyright-338980.mp3"
+      preload="auto"
+    ></audio>
     <canvas id="starCanvas"></canvas>
     <div class="envelope-wrapper" id="envelopeWrapper">
       <div class="envelope" id="envelope">
