@@ -312,10 +312,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const { openTimeline, closeTimeline } = createTimelines();
 
-  envelopeWrapper.addEventListener("click", () => {
-    if (isAnimating || body.classList.contains("light-off")) return;
-
+  envelopeWrapper.addEventListener("click", (event) => {
     if (event.target.classList.contains("envelope-open-top") && !isOpen) {
+      body.classList.toggle("light-off");
+
+      return;
+    }
+
+    if (isAnimating || body.classList.contains("light-off")) {
       return;
     }
 

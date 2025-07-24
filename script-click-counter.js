@@ -9,29 +9,29 @@ const somRaio = document.getElementById("somRaio");
 const wandSound = document.getElementById("wandSound");
 const radioSignal = document.getElementById("radioSignal");
 
+const cliquesParaAtivar = Math.floor(Math.random() * 12) + 3;
+
 document.addEventListener("click", function (e) {
   if (sequenciaFinalizada) return;
 
-  wandSound.currentTime = 0;
-  wandSound.play().catch(() => {});
-
-  if (
-    carta.contains(e.target) ||
-    envelopeWrapper.contains(e.target) ||
-    card.contains(e.target)
-  ) {
+  if (!e.target.classList.contains("maguinho-alvo")) {
+    wandSound.currentTime = 0;
+    wandSound.play().catch(() => {});
+  }
+  if (carta.contains(e.target) || card.contains(e.target)) {
     return;
   }
 
   cliques++;
-  contador.textContent = `Cliques: ${cliques}`;
+  contador.textContent = `Maguinhos Expurgados: ${cliques}`;
 
-  if (cliques === 10) {
+  if (cliques === cliquesParaAtivar) {
     iniciarSequenciaSinistra();
   }
 });
 
 function iniciarSequenciaSinistra() {
+  pararMinigame();
   document.body.style.pointerEvents = "none";
 
   somRaio.currentTime = 0;

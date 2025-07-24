@@ -4,17 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Carta Animada</title>
-    <link rel="preload" href="envelope-1.webp" as="image" />
-    <link rel="preload" href="envelope-3.webp" as="image" />
-    <link rel="preload" href="envelope-4.webp" as="image" />
-    <link rel="preload" href="envelope-5.webp" as="image" />
-    <link rel="preload" href="carta-pt1.webp" as="image" />
-    <link rel="preload" href="carta-pt2.webp" as="image" />
-    <link rel="preload" href="carta-pt3.webp" as="image" />
-    <link rel="preload" href="card-nivel1.webp" as="image" />
+    <link rel="preload" href="./img/envelope-1.webp" as="image" />
+    <link rel="preload" href="./img/envelope-3.webp" as="image" />
+    <link rel="preload" href="./img/envelope-4.webp" as="image" />
+    <link rel="preload" href="./img/envelope-5.webp" as="image" />
+    <link rel="preload" href="./img/carta-pt1.webp" as="image" />
+    <link rel="preload" href="./img/carta-pt2.webp" as="image" />
+    <link rel="preload" href="./img/carta-pt3.webp" as="image" />
+    <link rel="preload" href="./img/card-nivel1.webp" as="image" />
+    <link rel="preload" href="./img/maguinho.webp" as="image" />
     <style>
       * {
-        cursor: url("./img/wand_cursor_cartoon_96.png") 5 5, default;
+        cursor: none;
+      }
+
+      #cursor-falso {
+        position: fixed;
+        width: 96px; /* Tamanho do nosso cursor falso */
+        height: 96px;
+        background-image: url("./img/wand_cursor_cartoon_96.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        /* Z-index MUITO alto para ficar sobre tudo */
+        z-index: 999999;
+        /* Impede que o próprio cursor bloqueie cliques nos elementos abaixo dele */
+        pointer-events: none;
+        /* Ajusta a posição para que a ponta da varinha seja o ponto (0,0) */
+        transform: translate(-5px, -5px);
       }
 
       body {
@@ -27,6 +43,7 @@
         font-family: "Georgia", serif;
         overflow: hidden;
         min-height: 100vh;
+        width: 100vw;
         transition: all 0.5s ease-in-out;
       }
 
@@ -301,9 +318,91 @@
           transform: translate(0px, 0px) rotate(0deg);
         }
       }
+
+      .maguinho-alvo {
+        position: fixed; /* Fica fixo na tela */
+        width: 80px; /* Largura da imagem */
+        height: 80px; /* Altura da imagem */
+        background-image: url("img/maguinho.webp");
+        background-size: contain;
+        background-repeat: no-repeat;
+        z-index: 9000; /* Garante que fique sobre o fundo, mas abaixo de outros elementos importantes */
+        transition: all 0.3s ease-in-out;
+        /* Usa o mesmo cursor que o resto do seu site */
+        cursor: url("./img/wand_cursor_cartoon_96.png") 5 5, pointer;
+      }
+
+      .maguinho-alvo:hover {
+        filter: brightness(1.2) drop-shadow(0 0 5px white);
+      }
+
+      /* ADICIONE esta nova classe para o efeito de desaparecer */
+      .maguinho-alvo.desaparecendo {
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        opacity: 0;
+        transform: scale(0.5);
+      }
+
+      /* Animação de clique (permanece a mesma) */
+      .maguinho-alvo.clicado {
+        animation: animacao-maguinho 0.5s ease-in-out forwards;
+      }
+
+      @keyframes animacao-maguinho {
+        0% {
+          transform: scale(1.1) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(0) rotate(90deg);
+          opacity: 0;
+        }
+      }
+
+      /* --- NOVAS ANIMAÇÕES DE MOVIMENTO --- */
+
+      /* 1. Movimento Flutuante (o que já tínhamos) */
+      .movimento-flutuante {
+        animation: flutuar 3s infinite alternate ease-in-out;
+      }
+      @keyframes flutuar {
+        from {
+          transform: translateY(0px);
+        }
+        to {
+          transform: translateY(-15px);
+        }
+      }
+
+      /* 2. Movimento Diagonal */
+      .movimento-diagonal {
+        animation: diagonal 4s infinite alternate ease-in-out;
+      }
+      @keyframes diagonal {
+        from {
+          transform: translate(0, 0);
+        }
+        to {
+          transform: translate(20px, -20px);
+        }
+      }
+
+      /* 3. Movimento Rápido (para um desafio extra) */
+      .movimento-rapido {
+        animation: rapido 2.5s infinite alternate ease-in-out;
+      }
+      @keyframes rapido {
+        from {
+          transform: translate(0, 0) scale(0.8);
+        } /* Começa um pouco menor */
+        to {
+          transform: translate(-30px, 15px) scale(0.8);
+        }
+      }
     </style>
   </head>
   <body>
+    <div id="cursor-falso"></div>
     <audio
       id="wandSound"
       src="./audio/surprise-sound-effect-99300.mp3"
@@ -358,7 +457,7 @@
           font-family: Georgia, serif;
         "
       >
-        Cliques: 0
+        Maguinhos expurgados: 0
       </div>
     </div>
     <div id="carta"></div>
@@ -366,9 +465,53 @@
 
     <audio id="somRaio" src="audio/raio.mp3" preload="auto"></audio>
 
+    <audio
+      id="som-mago-1"
+      src="./audio/Maguinho/epic-war-combat-scream-352707.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-2"
+      src="./audio/Maguinho/girl-scream-45657.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-3"
+      src="./audio/Maguinho/harp-piano-dreamy-flashback-jam-fx-1-00-07.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-4"
+      src="./audio/Maguinho/man-screaming-aaaah.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-5"
+      src="./audio/Maguinho/michael-jackson-hee-hee.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-6"
+      src="./audio/Maguinho/mj-dow.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-7"
+      src="./audio/Maguinho/oooooohhhh.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-8"
+      src="./audio/Maguinho/wow_8.mp3"
+      preload="auto"
+    ></audio>
+    <audio id="som-magia-tiro" src="audio/tiro.mp3" preload="auto"></audio>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="/script.js"></script>
     <script src="/script-mouse-shit.js"></script>
     <script src="script-click-counter.js"></script>
+    <script src="script-minigame.js"></script>
+    <script src="script-cursor.js"></script>
   </body>
 </html>
