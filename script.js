@@ -337,10 +337,3 @@ document.addEventListener("click", function (e) {
 
   setTimeout(() => sparkle.remove(), 1200);
 });
-
-const wandSound = document.getElementById("wandSound");
-
-document.addEventListener("click", () => {
-  wandSound.currentTime = 0; // Reinicia o áudio se estiver tocando
-  wandSound.play();
-});

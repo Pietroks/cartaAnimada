@@ -218,6 +218,89 @@
           opacity: 0;
         }
       }
+
+      #telaQuebrada {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: url("/img/tela-quebrada.jpg") no-repeat center center;
+        background-size: cover;
+        z-index: 9999;
+        display: none;
+        pointer-events: none;
+      }
+
+      .raio {
+        position: fixed;
+        top: 0;
+        width: 6px;
+        background: linear-gradient(white, rgba(255, 255, 255, 0.3));
+        height: 0;
+        z-index: 9998;
+        animation: raioReal 0.3s ease-out forwards;
+        transform: translateX(-50%);
+        border-radius: 3px;
+      }
+
+      @keyframes raioReal {
+        0% {
+          height: 0;
+          opacity: 0.8;
+          box-shadow: 0 0 20px white;
+          filter: hue-rotate(0deg);
+        }
+        50% {
+          height: 100vh;
+          opacity: 1;
+          box-shadow: 0 0 50px white;
+          filter: hue-rotate(45deg);
+        }
+        100% {
+          height: 0;
+          opacity: 0;
+          box-shadow: 0 0 0 transparent;
+          filter: hue-rotate(136deg);
+        }
+      }
+
+      body.tremor {
+        animation: tremer 0.1s ease-in-out infinite;
+      }
+      body.tremor .raio {
+        animation: raioReal 0.3s ease-out forwards,
+          tremer 0.1s ease-in-out infinite;
+      }
+      body.tremor .envelope-wrapper {
+        filter: brightness(0.5);
+      }
+      @keyframes tremer {
+        0% {
+          transform: translate(0px, 0px) rotate(0deg);
+        }
+        15% {
+          transform: translate(-10px, 8px) rotate(1deg);
+        }
+        30% {
+          transform: translate(12px, -6px) rotate(-1.5deg);
+        }
+        45% {
+          transform: translate(-8px, 10px) rotate(1.2deg);
+        }
+        60% {
+          transform: translate(10px, -12px) rotate(-4deg);
+        }
+        75% {
+          transform: translate(-6px, 6px) rotate(1deg);
+        }
+        90% {
+          transform: translate(6px, -8px) rotate(-1deg);
+        }
+        100% {
+          transform: translate(0px, 0px) rotate(0deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -236,6 +319,12 @@
       src="/audio/heavy-thunder-sound-effect-no-copyright-338980.mp3"
       preload="auto"
     ></audio>
+    <audio
+      id="radioSignal"
+      src="/audio/radio-signal.mp3"
+      preload="auto"
+    ></audio>
+
     <canvas id="starCanvas"></canvas>
     <div class="envelope-wrapper" id="envelopeWrapper">
       <div class="envelope" id="envelope">
@@ -256,8 +345,30 @@
       </div>
     </div>
 
+    <div>
+      <div
+        id="clickCounter"
+        style="
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          color: white;
+          font-size: 20px;
+          z-index: 99999;
+          font-family: Georgia, serif;
+        "
+      >
+        Cliques: 0
+      </div>
+    </div>
+    <div id="carta"></div>
+    <div id="telaQuebrada"></div>
+
+    <audio id="somRaio" src="audio/raio.mp3" preload="auto"></audio>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="/script.js"></script>
     <script src="/script-mouse-shit.js"></script>
+    <script src="script-click-counter.js"></script>
   </body>
 </html>
