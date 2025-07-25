@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let hits = parseInt(maguinho.dataset.kamehamehaHits) + 1;
         maguinho.dataset.kamehamehaHits = hits;
 
-        if (hits >= 12) {
+        if (hits >= 30) {
           // SUCESSO!
           clearTimeout(maguinho.kamehamehaTimer); // Cancela a derrota
           somKamehameha.pause(); // Para o som de carregar
