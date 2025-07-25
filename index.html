@@ -13,6 +13,8 @@
     <link rel="preload" href="./img/carta-pt3.webp" as="image" />
     <link rel="preload" href="./img/card-nivel1.webp" as="image" />
     <link rel="preload" href="./img/maguinho.webp" as="image" />
+    <link rel="preload" href="./img/mago-nivel-3.png" as="image" />
+    <link rel="preload" href="./img/mago-1-2.png" as="image" />
     <style>
       * {
         cursor: none;
@@ -359,9 +361,6 @@
         }
       }
 
-      /* --- NOVAS ANIMAÇÕES DE MOVIMENTO --- */
-
-      /* 1. Movimento Flutuante (o que já tínhamos) */
       .movimento-flutuante {
         animation: flutuar 3s infinite alternate ease-in-out;
       }
@@ -387,17 +386,164 @@
         }
       }
 
-      /* 3. Movimento Rápido (para um desafio extra) */
+      /* 3. Movimento Rápido */
       .movimento-rapido {
         animation: rapido 2.5s infinite alternate ease-in-out;
       }
       @keyframes rapido {
         from {
           transform: translate(0, 0) scale(0.8);
-        } /* Começa um pouco menor */
+        }
         to {
           transform: translate(-30px, 15px) scale(0.8);
         }
+      }
+
+      /* --- NOVAS ANIMAÇÕES DE MOVIMENTO --- */
+
+      /* 1. Movimento Flutuante (o que já tínhamos) */
+      .movimento-flutuante {
+        animation: flutuar 3s infinite alternate ease-in-out;
+      }
+      @keyframes flutuar {
+        from {
+          transform: translateY(0px);
+        }
+        to {
+          transform: translateY(-15px);
+        }
+      }
+
+      /* 2. Movimento Diagonal */
+
+      .mago-dourado {
+        /* Um filtro para dar um brilho dourado e intenso */
+        filter: drop-shadow(0 0 15px gold) brightness(1.5);
+        /* ADICIONE A IMAGEM ESPECÍFICA DELE */
+        background-image: url("img/mago-nivel-3.png");
+      }
+
+      .mago-fantasma {
+        opacity: 0.6;
+        filter: grayscale(50%); /* Deixa ele meio sem cor */
+        transition: opacity 0.3s, filter 0.3s;
+        /* ADICIONE A IMAGEM ESPECÍFICA DELE */
+        background-image: url("img/mago-1-2.png");
+      }
+
+      .mago-fantasma:hover {
+        opacity: 1; /* Fica mais visível no hover */
+        filter: drop-shadow(0 0 10px cyan); /* Aura azul para diferenciar */
+      }
+
+      .teleportando {
+        /* Animação de teleporte */
+        animation: animacao-teleporte 0.3s ease-out forwards;
+      }
+
+      .movimento-dourado {
+        animation: dourado-zig-zag 2s infinite alternate ease-in-out;
+      }
+      @keyframes dourado-zig-zag {
+        0% {
+          transform: translate(0, 0);
+        }
+        25% {
+          transform: translate(10px, -80px);
+        } /* Move mais para a direita e para cima */
+        50% {
+          transform: translate(60px, -30px);
+        } /* Move mais longe e mais rápido */
+        100% {
+          transform: translate(-60px, 30px);
+        }
+      }
+
+      /* 5. Movimento Fantasma (lento, etéreo e flutuante) */
+      .movimento-fantasma {
+        animation: fantasma-flutua 6s infinite alternate ease-in-out;
+      }
+      @keyframes fantasma-flutua {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 0.6;
+        }
+        25% {
+          transform: translate(-50px, 10px) scale(1.05);
+          opacity: 0.7;
+        } /* Muda de opacidade e tamanho */
+        50% {
+          transform: translate(20px, -30px) scale(1.05);
+          opacity: 0.8;
+        } /* Muda de opacidade e tamanho */
+        100% {
+          transform: translate(-20px, 10px) scale(1);
+          opacity: 0.6;
+        }
+      }
+
+      @keyframes animacao-teleporte {
+        from {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        to {
+          transform: scale(0);
+          opacity: 0;
+        }
+      }
+
+      .dano-fantasma {
+        /* Animação de dano para o fantasma */
+        animation: animacao-dano-fantasma 0.2s ease-in-out;
+      }
+
+      @keyframes animacao-dano-fantasma {
+        0% {
+          transform: translate(0, 0);
+        }
+        25% {
+          transform: translate(5px, -5px) rotate(3deg);
+        } /* Tremores rápidos */
+        50% {
+          transform: translate(-5px, 5px) rotate(-3deg);
+        }
+        75% {
+          transform: translate(3px, -3px) rotate(2deg);
+        }
+        100% {
+          transform: translate(0, 0);
+        }
+      }
+
+      .envelope-wrapper.vitoria {
+        filter: drop-shadow(0 0 25px #aaffaa) brightness(1.2);
+        transition: filter 1s ease-in-out;
+      }
+
+      #restartButton {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        font-size: 18px;
+        font-family: "Georgia", serif;
+        color: white;
+        background-color: #8a2be2; /* Um roxo mágico */
+        border: 2px solid #ddd;
+        border-radius: 50px;
+        box-shadow: 0 0 15px #8a2be2, inset 0 0 5px rgba(255, 255, 255, 0.5);
+        z-index: 999998;
+        cursor: none; /* Para manter o cursor falso visível sobre ele */
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+      }
+
+      #restartButton.hidden {
+        opacity: 0;
+        pointer-events: none; /* Impede cliques quando invisível */
+        transform: translateX(-50%) translateY(20px); /* Efeito de surgir de baixo */
       }
     </style>
   </head>
@@ -459,10 +605,40 @@
       >
         Maguinhos expurgados: 0
       </div>
+      <div>
+        <div
+          id="metaDisplay"
+          style="
+            position: fixed;
+            top: 50px;
+            left: 20px;
+            color: white;
+            font-size: 16px;
+            z-index: 99999;
+            font-family: Georgia, serif;
+          "
+        >
+          Meta: 20
+        </div>
+        <div
+          id="escapesDisplay"
+          style="
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            color: #ff8a8a;
+            font-size: 16px;
+            z-index: 99999;
+            font-family: Georgia, serif;
+          "
+        >
+          Escaparam: 0
+        </div>
+      </div>
     </div>
     <div id="carta"></div>
     <div id="telaQuebrada"></div>
-
+    <button id="restartButton" class="hidden">Reiniciar o Desafio</button>
     <audio id="somRaio" src="audio/raio.mp3" preload="auto"></audio>
 
     <audio
@@ -505,7 +681,58 @@
       src="./audio/Maguinho/wow_8.mp3"
       preload="auto"
     ></audio>
+    <audio
+      id="som-mago-9"
+      src="./audio/Maguinho/goofy-yell-youtube-google-chrome-27_11_2016-21_17_14.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-10"
+      src="./audio/Maguinho/metal-gear-solid-snake-death-scream-sound-effect_fR1Ryqk.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-11"
+      src="./audio/Maguinho/uuhhh_iqsgYFh.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-12"
+      src="./audio/Maguinho/tf2-spy-death-scream.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-mago-13"
+      src="./audio/Maguinho/minecraft-death-sound-effect.mp3"
+      preload="auto"
+    ></audio
+    ><audio
+      id="som-mago-14"
+      src="./audio/Maguinho/taric-oh.mp3"
+      preload="auto"
+    ></audio>
     <audio id="som-magia-tiro" src="audio/tiro.mp3" preload="auto"></audio>
+    <audio
+      id="som-mago-dourado"
+      src="audio/Maguinho/peppino-angry-scream-ear-rape.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-fantasma-teleporte"
+      src="audio/Maguinho/oh-shit-a-ghost-lightskinmonte-meme-1.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-teleporte"
+      src="audio/dbz-teleport.mp3"
+      preload="auto"
+    ></audio>
+    <audio id="som-mago-escape" src="audio/hihi.mp3" preload="auto"></audio>
+    <audio
+      id="som-vitoria"
+      src="audio/award-winners.mp3"
+      preload="auto"
+    ></audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="/script.js"></script>

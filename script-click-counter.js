@@ -1,5 +1,7 @@
-let cliques = 0;
+window.cliques = 0;
 let sequenciaFinalizada = false;
+
+window.metaDeMagos = 50;
 
 const contador = document.getElementById("clickCounter");
 const carta = document.getElementById("carta");
@@ -9,24 +11,36 @@ const somRaio = document.getElementById("somRaio");
 const wandSound = document.getElementById("wandSound");
 const radioSignal = document.getElementById("radioSignal");
 
-const cliquesParaAtivar = Math.floor(Math.random() * 12) + 3;
+// Atualiza a meta na tela
+document.addEventListener("DOMContentLoaded", () => {
+  const metaDisplay = document.getElementById("metaDisplay");
+  if (metaDisplay) metaDisplay.textContent = `Meta: ${window.metaDeMagos}`;
+});
+
+function adicionarMagosExpurgados(quantidade) {
+  if (sequenciaFinalizada || !jogoAtivo) return;
+
+  window.cliques += quantidade;
+  contador.textContent = `Maguinhos Expurgados: ${window.cliques}`;
+
+  // VERIFICA SE ATINGIU A META DE VITÓRIA
+  if (window.cliques >= window.metaDeMagos) {
+    if (!sequenciaFinalizada) {
+      // Garante que a vitória só seja chamada uma vez
+      vitoriaMinigame();
+    }
+  }
+}
 
 document.addEventListener("click", function (e) {
   if (sequenciaFinalizada) return;
 
-  if (!e.target.classList.contains("maguinho-alvo")) {
+  if (
+    !e.target.classList.contains("maguinho-alvo") &&
+    !e.target.closest(".envelope-wrapper")
+  ) {
     wandSound.currentTime = 0;
     wandSound.play().catch(() => {});
-  }
-  if (carta.contains(e.target) || card.contains(e.target)) {
-    return;
-  }
-
-  cliques++;
-  contador.textContent = `Maguinhos Expurgados: ${cliques}`;
-
-  if (cliques === cliquesParaAtivar) {
-    iniciarSequenciaSinistra();
   }
 });
 
@@ -89,9 +103,7 @@ function iniciarSequenciaSinistra() {
   const onRaioEnd = () => {
     somRaio.removeEventListener("ended", onRaioEnd);
 
-    // Remove flash
-    const flash = document.getElementById("flashEffect");
-    if (flash) flash.remove();
+    // ... (todo o código de remoção de elementos permanece igual) ...
 
     // Mostra a tela quebrada
     const tela = document.getElementById("telaQuebrada");
@@ -100,13 +112,19 @@ function iniciarSequenciaSinistra() {
       tela.style.zIndex = 99999;
     }
 
-    // Remove todos os outros elementos (exceto audio e tela quebrada)
+    // Remove todos os outros elementos
     document
       .querySelectorAll("body > *:not(#telaQuebrada):not(audio)")
       .forEach((el) => el.remove());
 
     // Agora sim: trava tudo
     finalizarTudo();
+
+    // ADICIONADO: MOSTRA O BOTÃO DE REINICIAR APÓS TUDO ACABAR
+    const restartBtn = document.getElementById("restartButton");
+    if (restartBtn) {
+      restartBtn.classList.remove("hidden");
+    }
   };
 
   somRaio.addEventListener("ended", onRaioEnd);

@@ -1,3 +1,4 @@
+window.minigameAtivo = true;
 document.addEventListener("DOMContentLoaded", () => {
   const envelopeWrapper = document.getElementById("envelopeWrapper");
   const letter = document.getElementById("letter");
@@ -12,8 +13,17 @@ document.addEventListener("DOMContentLoaded", () => {
   let isAnimating = false;
 
   const handleCardClick = () => {
-    window.location.href =
-      "https://melhoreseusresultados.com.br/inscricao-escola-de-programadores";
+    // 1. Abre o link em uma NOVA ABA
+    window.open(
+      "https://melhoreseusresultados.com.br/inscricao-escola-de-programadores",
+      "_blank"
+    );
+
+    // 2. Mostra o botão de reiniciar
+    const restartBtn = document.getElementById("restartButton");
+    if (restartBtn) {
+      restartBtn.classList.remove("hidden");
+    }
   };
 
   const handleCardHover = () => {
@@ -313,6 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const { openTimeline, closeTimeline } = createTimelines();
 
   envelopeWrapper.addEventListener("click", (event) => {
+    if (window.minigameAtivo) return;
     if (event.target.classList.contains("envelope-open-top") && !isOpen) {
       body.classList.toggle("light-off");
 
@@ -329,6 +340,23 @@ document.addEventListener("DOMContentLoaded", () => {
       openTimeline.restart();
     }
     isOpen = !isOpen;
+  });
+
+  const restartBtn = document.getElementById("restartButton");
+  if (restartBtn) {
+    restartBtn.addEventListener("click", () => {
+      // A forma mais simples e segura de reiniciar tudo: recarregar a página.
+      window.location.reload();
+    });
+  }
+  window.addEventListener("keydown", (event) => {
+    // Verifica se a tecla Shift e a tecla 'R' foram pressionadas juntas
+    if (event.shiftKey && event.key.toUpperCase() === "R") {
+      // Impede qualquer ação padrão do navegador para Shift+R
+      event.preventDefault();
+      // Recarrega a página instantaneamente
+      window.location.reload();
+    }
   });
 });
 
