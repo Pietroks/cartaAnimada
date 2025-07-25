@@ -620,6 +620,49 @@
           transform: translate(-2px, -3px) scale(1.1);
         }
       }
+
+      #kamehameha-laser {
+        position: fixed;
+        left: 0;
+        height: 60px; /* Grossura do laser */
+        width: 150vw; /* Comprimento suficiente para cruzar a tela */
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0),
+          rgba(0, 200, 255, 0.8) 40%,
+          #011557 50%,
+          rgba(0, 200, 255, 0.8) 60%,
+          rgba(255, 255, 255, 0)
+        );
+        border-radius: 30px;
+        box-shadow: 0 0 15px #fff, 0 0 30px #00ffff, 0 0 45px #00ffff;
+
+        /* Começa invisível e fora da tela */
+        opacity: 0;
+        pointer-events: none;
+        z-index: 99997; /* Fica abaixo dos raios da derrota, mas acima de tudo */
+        transform-origin: left center;
+      }
+
+      #kamehameha-laser.disparando {
+        animation: animacao-laser 0.5s ease-out forwards;
+      }
+
+      @keyframes animacao-laser {
+        0% {
+          opacity: 1;
+          /* Adiciona a rotação, que será definida pelo JS */
+          transform: rotate(var(--laser-angle, 0deg)) scaleX(0);
+        }
+        80% {
+          opacity: 1;
+          transform: rotate(var(--laser-angle, 0deg)) scaleX(1);
+        }
+        100% {
+          opacity: 0;
+          transform: rotate(var(--laser-angle, 0deg)) scaleX(1);
+        }
+      }
     </style>
   </head>
   <body>
@@ -714,6 +757,7 @@
     <div id="carta"></div>
     <div id="telaQuebrada"></div>
     <button id="restartButton" class="hidden">Reiniciar o Desafio</button>
+    <div id="kamehameha-laser"></div>
     <audio id="somRaio" src="audio/raio.mp3" preload="auto"></audio>
 
     <audio
@@ -810,7 +854,7 @@
     ></audio>
     <audio
       id="maguinho-super-morte"
-      src="audio/Maguinho/goku-e-um-fracassado.mp3"
+      src="audio/Maguinho/nao-negao-smzinho.mp3"
       preload="auto"
     ></audio>
     <audio

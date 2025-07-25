@@ -96,26 +96,61 @@ document.addEventListener("DOMContentLoaded", function () {
   const somSuperMorte = document.getElementById("maguinho-super-morte");
   const somSuperScape = document.getElementById("som-super-escape");
   const somKamehameha = document.getElementById("som-kamehameha");
+  const laser = document.getElementById("kamehameha-laser");
+
+  function dispararKamehameha(maguinho) {
+    if (!maguinho || !laser) return;
+
+    // Pega a posição do mago e o centro da tela
+    const rect = maguinho.getBoundingClientRect();
+    const mageX = rect.left + rect.width / 2;
+    const mageY = rect.top + rect.height / 2;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    // Calcula o ângulo entre o mago e o centro da tela
+    const deltaX = centerX - mageX;
+    const deltaY = centerY - mageY;
+    const radianos = Math.atan2(deltaY, deltaX); // Ângulo em radianos
+    const graus = (radianos * 180) / Math.PI; // Converte para graus
+
+    // Posiciona o laser no centro do mago
+    const laserHeight = 60; // A altura do laser definida no CSS
+    laser.style.top = `${mageY - laserHeight / 2}px`;
+    laser.style.left = `${mageX}px`;
+
+    // Define a variável CSS com o ângulo calculado
+    laser.style.setProperty("--laser-angle", `${graus}deg`);
+
+    // Ativa a animação de disparo
+    laser.classList.add("disparando");
+
+    // Limpa a animação depois que ela termina
+    setTimeout(() => {
+      laser.classList.remove("disparando");
+    }, 500);
+  }
 
   function iniciarEventoKamehameha(maguinho) {
-    // Para o movimento normal e inicia a animação de carregar
     maguinho.classList.remove("movimento-super");
     maguinho.classList.add("carregando-poder");
 
-    // Toca o som de carregar
     somKamehameha.currentTime = 0;
     somKamehameha.play();
 
-    // Define o timer da derrota. Se não for cancelado a tempo, o jogador perde.
-    // A duração do timer deve ser a duração do seu áudio. Ajuste se necessário.
-    const duracaoKamehameha = 14000; // 5 segundos
+    const duracaoKamehameha = 10000; // 10 segundos
     const kamehamehaTimer = setTimeout(() => {
       if (document.body.contains(maguinho)) {
-        derrotaMinigame();
+        // ATUALIZADO: Dispara o laser antes de chamar a derrota
+        dispararKamehameha(maguinho);
+        // Um pequeno delay para o laser ser visto antes da tela quebrar
+        setTimeout(() => {
+          // ATUALIZADO: Passa o mago vitorioso para a função de derrota
+          derrotaMinigame(maguinho);
+        }, 400);
       }
     }, duracaoKamehameha);
 
-    // Anexa o timer ao mago para que possamos cancelá-lo depois
     maguinho.kamehamehaTimer = kamehamehaTimer;
   }
 
@@ -156,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
       maguinho.classList.add("mago-super", "movimento-super");
 
       // Chance muito rara (10% dos Super Magos) de iniciar o evento Kamehameha
-      if (Math.random() < 0.1) {
+      if (Math.random() < 0.75) {
         maguinho.dataset.evento = "kamehameha";
         maguinho.dataset.kamehamehaHits = 0; // Contador de hits
         // O evento começará após 3 segundos
@@ -201,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const penalidade = Math.random() < 0.5 ? 2 : 3;
         magosEscaparam += penalidade; // Adiciona a penalidade
         // Toca um som de risada mais imponente (reutilizando o do dourado, por exemplo)
-        if (somMagoDourado) somMagoDourado.play().catch((e) => {});
+        if (somSuperScape) somSuperScape.play().catch((e) => {});
       } else {
         magosEscaparam++; // Escape normal
         if (somMagoScape) somMagoScape.play().catch((e) => {});
@@ -224,6 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
         maguinho.dataset.evento === "kamehameha" &&
         maguinho.classList.contains("carregando-poder")
       ) {
+        somTiro.currentTime = 0;
         somTiro.play(); // Toca o som do tiro
         let hits = parseInt(maguinho.dataset.kamehamehaHits) + 1;
         maguinho.dataset.kamehamehaHits = hits;
@@ -357,9 +393,14 @@ document.addEventListener("DOMContentLoaded", function () {
     cicloDeSpawn();
   }
 
-  window.pararMinigame = function () {
-    clearTimeout(minigameInterval); // Agora limpa o setTimeout
-    document.querySelectorAll(".maguinho-alvo").forEach((m) => m.remove());
+  window.pararMinigame = function (excecao) {
+    clearTimeout(minigameInterval);
+    document.querySelectorAll(".maguinho-alvo").forEach((m) => {
+      // Só remove o mago se ele NÃO for a exceção
+      if (m !== excecao) {
+        m.remove();
+      }
+    });
   };
 
   iniciarMinigame();
