@@ -22,6 +22,10 @@ function vitoriaMinigame() {
   jogoAtivo = false;
   window.minigameAtivo = false; // "Destrava" a carta no script.js
 
+  if (document.body.classList.contains("light-off")) {
+    document.body.classList.remove("light-off");
+  }
+
   // Toca o som da vitória
   const somVitoria = document.getElementById("som-vitoria");
   if (somVitoria) {
@@ -42,8 +46,11 @@ function vitoriaMinigame() {
     "Recompensa Desbloqueada!";
 
   // MOSTRA O BOTÃO DE REINICIAR IMEDIATAMENTE APÓS A VITÓRIA
+  window.dispatchEvent(new CustomEvent("vitoriaDoJogo"));
+
   const restartBtn = document.getElementById("restartButton");
   if (restartBtn) {
+    restartBtn.textContent = "Jogar Novamente"; // Define o texto de vitória
     restartBtn.classList.remove("hidden");
   }
 }
@@ -86,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   const somTeleporte = document.getElementById("som-teleporte");
   const somMagoScape = document.getElementById("som-mago-escape");
+  const somSuperMorte = document.getElementById("maguinho-super-morte");
 
   function criarMaguinho() {
     if (!jogoAtivo) return;
@@ -117,7 +125,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- LÓGICA DE TIPO DE MAGO (permanece a mesma) ---
     let tipoMago;
     const chance = Math.random();
-    if (chance < 0.1) {
+
+    if (chance < 0.05) {
+      // 5% de chance para o Super Maguinho
+      tipoMago = "super";
+      maguinho.classList.add("mago-super", "movimento-super");
+    } else if (chance < 0.1) {
       tipoMago = "dourado";
       maguinho.classList.add("mago-dourado", "movimento-dourado"); // <-- CORREÇÃO: Adiciona movimento
     } else if (chance < 0.3) {
@@ -137,20 +150,33 @@ document.addEventListener("DOMContentLoaded", function () {
       maguinho.classList.add(animacaoAleatoria);
     }
 
-    const tempoDeVida = Math.random() * 3000 + 10000;
+    let tempoDeVida;
+    if (tipoMago === "super") {
+      tempoDeVida = Math.random() * 5000 + 15000; // Super dura de 15 a 20 segundos
+    } else {
+      tempoDeVida = Math.random() * 3000 + 10000; // Outros duram de 10 a 13 segundos
+    }
+
     const autoRemoveTimer = setTimeout(() => {
-      // Esta lógica de escape está correta e vai funcionar agora
-      magosEscaparam++;
-      escapesDisplay.textContent = `Escaparam: ${magosEscaparam} / ${limiteDeEscapes}`;
-      if (somMagoScape) {
-        somMagoScape.currentTime = 0;
-        somMagoScape.play().catch((e) => {});
+      // --- Lógica de Escape (ATUALIZADA) ---
+      if (tipoMago === "super") {
+        const penalidade = Math.random() < 0.5 ? 2 : 3;
+        magosEscaparam += penalidade; // Adiciona a penalidade
+        // Toca um som de risada mais imponente (reutilizando o do dourado, por exemplo)
+        if (somMagoDourado) somMagoDourado.play().catch((e) => {});
+      } else {
+        magosEscaparam++; // Escape normal
+        if (somMagoScape) somMagoScape.play().catch((e) => {});
       }
-      maguinho.classList.add("desaparecendo");
-      setTimeout(() => maguinho.remove(), 500);
+
+      // Atualiza a interface e verifica a derrota
+      escapesDisplay.textContent = `Escaparam: ${magosEscaparam} / ${limiteDeEscapes}`;
       if (magosEscaparam >= limiteDeEscapes) {
         derrotaMinigame();
       }
+
+      maguinho.classList.add("desaparecendo");
+      setTimeout(() => maguinho.remove(), 500);
     }, tempoDeVida);
 
     // --- LÓGICA DE CLIQUE ATUALIZADA ---
@@ -163,6 +189,15 @@ document.addEventListener("DOMContentLoaded", function () {
       somTiro.play().catch((e) => {});
 
       switch (tipoMago) {
+        case "super":
+          adicionarMagosExpurgados(10); // Recompensa de 10 pontos
+          if (somSuperMorte) {
+            somSuperMorte.currentTime = 0;
+            somSuperMorte.play().catch((e) => {});
+          }
+          maguinho.classList.add("clicado");
+          setTimeout(() => maguinho.remove(), 500);
+          break;
         case "dourado":
           adicionarMagosExpurgados(5);
           somMagoDourado.currentTime = 0;

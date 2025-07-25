@@ -120,9 +120,9 @@ function iniciarSequenciaSinistra() {
     // Agora sim: trava tudo
     finalizarTudo();
 
-    // ADICIONADO: MOSTRA O BOTÃO DE REINICIAR APÓS TUDO ACABAR
     const restartBtn = document.getElementById("restartButton");
     if (restartBtn) {
+      restartBtn.textContent = "Reiniciar"; // Define o texto de derrota
       restartBtn.classList.remove("hidden");
     }
   };

@@ -342,6 +342,17 @@ document.addEventListener("DOMContentLoaded", () => {
     isOpen = !isOpen;
   });
 
+  window.addEventListener("vitoriaDoJogo", () => {
+    // Verifica se a carta já não está aberta e se não há animação em andamento
+    if (!isOpen && !isAnimating) {
+      // Um pequeno delay para dar tempo do som da vitória começar a tocar
+      setTimeout(() => {
+        openTimeline.restart();
+        isOpen = true;
+      }, 1000); // Atraso de 1 segundo (1000ms)
+    }
+  });
+
   const restartBtn = document.getElementById("restartButton");
   if (restartBtn) {
     restartBtn.addEventListener("click", () => {
