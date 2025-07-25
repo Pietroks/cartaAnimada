@@ -1,6 +1,6 @@
 // --- VARIÁVEIS DE ESTADO DO JOGO ---
 let jogoAtivo = true;
-const limiteDeEscapes = 10; // Se 10 magos escaparem, o jogador perde
+const limiteDeEscapes = 15; // Se 10 magos escaparem, o jogador perde
 let magosEscaparam = 0;
 
 const somVitoria = document.getElementById("som-vitoria");
@@ -94,6 +94,30 @@ document.addEventListener("DOMContentLoaded", function () {
   const somTeleporte = document.getElementById("som-teleporte");
   const somMagoScape = document.getElementById("som-mago-escape");
   const somSuperMorte = document.getElementById("maguinho-super-morte");
+  const somSuperScape = document.getElementById("som-super-escape");
+  const somKamehameha = document.getElementById("som-kamehameha");
+
+  function iniciarEventoKamehameha(maguinho) {
+    // Para o movimento normal e inicia a animação de carregar
+    maguinho.classList.remove("movimento-super");
+    maguinho.classList.add("carregando-poder");
+
+    // Toca o som de carregar
+    somKamehameha.currentTime = 0;
+    somKamehameha.play();
+
+    // Define o timer da derrota. Se não for cancelado a tempo, o jogador perde.
+    // A duração do timer deve ser a duração do seu áudio. Ajuste se necessário.
+    const duracaoKamehameha = 14000; // 5 segundos
+    const kamehamehaTimer = setTimeout(() => {
+      if (document.body.contains(maguinho)) {
+        derrotaMinigame();
+      }
+    }, duracaoKamehameha);
+
+    // Anexa o timer ao mago para que possamos cancelá-lo depois
+    maguinho.kamehamehaTimer = kamehamehaTimer;
+  }
 
   function criarMaguinho() {
     if (!jogoAtivo) return;
@@ -130,9 +154,23 @@ document.addEventListener("DOMContentLoaded", function () {
       // 5% de chance para o Super Maguinho
       tipoMago = "super";
       maguinho.classList.add("mago-super", "movimento-super");
-    } else if (chance < 0.1) {
+
+      // Chance muito rara (10% dos Super Magos) de iniciar o evento Kamehameha
+      if (Math.random() < 0.1) {
+        maguinho.dataset.evento = "kamehameha";
+        maguinho.dataset.kamehamehaHits = 0; // Contador de hits
+        // O evento começará após 3 segundos
+        setTimeout(() => {
+          // Só inicia se o mago ainda estiver na tela
+          if (document.body.contains(maguinho)) {
+            iniciarEventoKamehameha(maguinho);
+          }
+        }, 3000);
+      }
+    } else if (chance < 0.15) {
+      // 10% de chance para o Dourado
       tipoMago = "dourado";
-      maguinho.classList.add("mago-dourado", "movimento-dourado"); // <-- CORREÇÃO: Adiciona movimento
+      maguinho.classList.add("mago-dourado", "movimento-dourado");
     } else if (chance < 0.3) {
       tipoMago = "fantasma";
       maguinho.classList.add("mago-fantasma", "movimento-fantasma"); // <-- CORREÇÃO: Adiciona movimento
@@ -182,6 +220,30 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- LÓGICA DE CLIQUE ATUALIZADA ---
     maguinho.addEventListener("click", (event) => {
       event.stopPropagation();
+      if (
+        maguinho.dataset.evento === "kamehameha" &&
+        maguinho.classList.contains("carregando-poder")
+      ) {
+        somTiro.play(); // Toca o som do tiro
+        let hits = parseInt(maguinho.dataset.kamehamehaHits) + 1;
+        maguinho.dataset.kamehamehaHits = hits;
+
+        if (hits >= 12) {
+          // SUCESSO!
+          clearTimeout(maguinho.kamehamehaTimer); // Cancela a derrota
+          somKamehameha.pause(); // Para o som de carregar
+          clearTimeout(autoRemoveTimer); // Cancela o auto-escape
+
+          adicionarMagosExpurgados(25); // Recompensa enorme!
+          if (somSuperMorte) somSuperMorte.play();
+
+          maguinho.classList.remove("carregando-poder");
+          maguinho.classList.add("clicado");
+          setTimeout(() => maguinho.remove(), 500);
+        }
+        return; // Impede que a lógica abaixo execute
+      }
+
       clearTimeout(autoRemoveTimer);
 
       // Toca o som do tiro em todos os cliques válidos em magos
@@ -190,11 +252,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       switch (tipoMago) {
         case "super":
-          adicionarMagosExpurgados(10); // Recompensa de 10 pontos
-          if (somSuperMorte) {
-            somSuperMorte.currentTime = 0;
-            somSuperMorte.play().catch((e) => {});
-          }
+          adicionarMagosExpurgados(10);
+          if (somSuperMorte) somSuperMorte.play();
           maguinho.classList.add("clicado");
           setTimeout(() => maguinho.remove(), 500);
           break;

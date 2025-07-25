@@ -596,6 +596,30 @@
           transform: translate(0, 0) scale(1.1);
         }
       }
+
+      .carregando-poder {
+        /* Animação de carregar poder, sobrepõe a de movimento */
+        animation: carregar-poder 0.1s infinite linear !important;
+        /* !important garante que esta animação tenha prioridade */
+      }
+
+      @keyframes carregar-poder {
+        0% {
+          transform: translate(0, 0) scale(1.1);
+        }
+        25% {
+          transform: translate(-3px, 2px) scale(1.1);
+        }
+        50% {
+          transform: translate(3px, -2px) scale(1.1);
+        }
+        75% {
+          transform: translate(2px, 3px) scale(1.1);
+        }
+        100% {
+          transform: translate(-2px, -3px) scale(1.1);
+        }
+      }
     </style>
   </head>
   <body>
@@ -786,6 +810,16 @@
     ></audio>
     <audio
       id="maguinho-super-morte"
+      src="audio/Maguinho/goku-e-um-fracassado.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-kamehameha"
+      src="audio/Maguinho/goku-kamehameha-br.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="som-super-escape"
       src="audio/Maguinho/goku-e-um-fracassado.mp3"
       preload="auto"
     ></audio>
